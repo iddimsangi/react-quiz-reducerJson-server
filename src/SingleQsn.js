@@ -1,15 +1,15 @@
 import React from "react";
 
-const SingleQsn = () => {
+const SingleQsn = ({options}) => {
   return (
-
-     
-      <div className="choice-container">
-        <p className="choice-prefix">A</p>
+        <div>
+            {options.map((opt, index) => (<div key={index} className="choice-container">
+        <p className="choice-prefix">{index + 1}</p>
         <p className="p choice-text" data-number="1">
-          Choice 1
+          {opt}
         </p>
-      </div>
+      </div>))}
+        </div>
     
   );
 };

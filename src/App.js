@@ -26,7 +26,12 @@ const reducer = (state, action) => {
         return{
             ...state,
             status:"start"
-        }      
+        }   
+    case "nextQuestion":
+        return{
+            ...state,
+            index:state.index + action.payload
+        }   
     default:
       throw new Error("unknown action type")
   }
@@ -35,6 +40,7 @@ const reducer = (state, action) => {
 function App() {
   const [mystate, dispatch] = useReducer(reducer, initialState);
 const{ questions, status, index}=mystate;
+const totalQsns = questions.length;
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -49,12 +55,10 @@ const{ questions, status, index}=mystate;
 
     fetchQuestions();
   }, []); 
-console.log(status);
-console.log(mystate);
   return (
     <div className="container">
       {status === "ready" && <Home dispatch={dispatch}/>}
-      {status === "start" && <Qustion question={questions[index]}/>}
+      {status === "start" && <Qustion totalQsns={totalQsns} dispatch={dispatch} questionSelected={questions[index]}/>}
       {/* Render other components based on the state */}
     </div>
   );

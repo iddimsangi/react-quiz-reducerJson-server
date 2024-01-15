@@ -2,18 +2,17 @@ import React from 'react'
 import ScoreHeader from './ScoreHeader';
 import SingleQsn from './SingleQsn';
 
-const Qustion = ({question}) => {
-    console.log(question);
+const Qustion = ({questionSelected, totalQsns, dispatch}) => {
+    console.log(questionSelected);
+    const{correctOption, id, options, points, question} = questionSelected;
+
   return (
     <div id="game" className="justify-center flex-column">
-        <ScoreHeader/>
-        <h2 id="question">What is the answer to this question?</h2>
-        <SingleQsn/>
-        <SingleQsn/>
-        <SingleQsn/>
-        <SingleQsn/>
+        <ScoreHeader totalQsns={totalQsns}/>
+        <h2 id="question">{question}</h2>
+        <SingleQsn options = {options}  />
         <div className='btn-container'>
-        <button className='btn'>Next &rarr;</button>
+        <button onClick={() => dispatch({type:"nextQuestion", payload:1})} className='btn'>Next &rarr;</button>
         </div>
     </div>
   )
