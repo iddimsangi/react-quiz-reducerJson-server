@@ -80,6 +80,10 @@ display: none;
 }
 
 /* BUTTONS */
+.btn-container{
+ display: flex;
+ justify-content: end;
+}
 .btn {
 font-size: 1.8rem;
 padding: 1rem 0;

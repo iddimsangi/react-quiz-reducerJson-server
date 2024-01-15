@@ -1,56 +1,62 @@
-import './App.css';
-import End from './End';
-import Home from './Home';
-import HighScore from './HighScore';
+import { useReducer, useEffect } from "react";
+import "./App.css";
+import Home from "./Home";
+import Qustion from "./Qustion";
+
+const initialState = {
+  questions: [],
+  status: "loading",
+  index:0
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "received":
+      return {
+        ...state,
+        questions: action.payload,
+        status:"ready"
+      };
+    case "receivedFailed":
+          return {
+            ...state,
+            status:"error"
+          }
+    case "start":
+        return{
+            ...state,
+            status:"start"
+        }      
+    default:
+      throw new Error("unknown action type")
+  }
+};
 
 function App() {
-  return (
-    <>
-     <div className="container">
-    <div id="game" className="justify-center flex-column">
-        <div id="hud">
-            <div id="hud-item">
-                <p id="progressText" className="hud-prefix">
-                    Question
-                </p>
-                <div id="progressBar">
-                    <div id="progressBarFull"></div>
-                </div>    
-            </div>
-            <div id="hud-item">
-                <p className="hud-prefix">
-                    Score
-                </p>
-                <h1 className="hud-main-text" id="score">
-                    0
-                </h1>
-            </div>
-        </div>
-        <h2 id="question">What is the answer to this question?</h2>
-        <div className="choice-container">
-            <p className="choice-prefix">A</p>
-            <p className="p choice-text" data-number="1">Choice 1</p>
-        </div>
-        <div className="choice-container">
-            <p className="choice-prefix">B</p>
-            <p className="p choice-text" data-number="2">Choice 2</p>
-        </div>
-        <div className="choice-container">
-            <p className="choice-prefix">C</p>
-            <p className="p choice-text" data-number="3">Choice 3</p>
-        </div>
-        <div className="choice-container">
-            <p className="choice-prefix">D</p>
-            <p className="p choice-text" data-number="4">Choice 4</p>
-        </div>
-    </div>
-    </div>
-    <End/>
-    <Home/>
-    <HighScore/>
-    </>
-   
+  const [mystate, dispatch] = useReducer(reducer, initialState);
+const{ questions, status, index}=mystate;
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const data = await fetch("http://localhost:9000/questions");
+        const response = await data.json();
+        dispatch({ type: "received", payload: response });
+      } catch (error) {
+        console.log(error);
+        dispatch({ type: "receivedFailed" }); 
+      }
+    };
 
+    fetchQuestions();
+  }, []); 
+console.log(status);
+console.log(mystate);
+  return (
+    <div className="container">
+      {status === "ready" && <Home dispatch={dispatch}/>}
+      {status === "start" && <Qustion question={questions[index]}/>}
+      {/* Render other components based on the state */}
+    </div>
   );
 }
 
