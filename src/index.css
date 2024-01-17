@@ -184,6 +184,10 @@ color: #aaa;
   border: 0.3rem solid #56a5eb;
   margin-top: 1.5rem;
 }
+input[type="range"]::-moz-range-progress {
+  background-color: green;
+  height: 1em;
+}
 
 #progressBarFull {
   height: 3.4rem;

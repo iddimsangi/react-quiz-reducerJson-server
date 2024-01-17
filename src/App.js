@@ -6,7 +6,11 @@ import Qustion from "./Qustion";
 const initialState = {
   questions: [],
   status: "loading",
-  index:0
+  index: 0,
+  answer: null,
+  currentQsn:null, 
+  currentPoints:0,
+  isCorrect:false
 };
 
 const reducer = (state, action) => {
@@ -15,32 +19,48 @@ const reducer = (state, action) => {
       return {
         ...state,
         questions: action.payload,
-        status:"ready"
+        status: "ready",
       };
     case "receivedFailed":
-          return {
-            ...state,
-            status:"error"
-          }
+      return {
+        ...state,
+        status: "error",
+      };
     case "start":
-        return{
-            ...state,
-            status:"start"
-        }   
+      return {
+        ...state,
+        status: "start",
+        currentQsn:state.questions[state.index]
+      };
     case "nextQuestion":
-        return{
-            ...state,
-            index:state.index + action.payload
-        }   
+      return {
+        ...state,
+        index: state.index + action.payload,
+        isCorrect:false,
+        currentQsn:state.questions[state.index + action.payload]
+      };
+    case "pressedAnswer":
+      return {
+        ...state,
+        answer: action.payload,
+        isCorrect:action.payload === state.currentQsn.correctOption ? true : state.isCorrect
+      };
     default:
-      throw new Error("unknown action type")
+      throw new Error("unknown action type");
   }
 };
 
 function App() {
   const [mystate, dispatch] = useReducer(reducer, initialState);
-const{ questions, status, index}=mystate;
-const totalQsns = questions.length;
+  const { questions, status, index, answer, currentQsn, currentPoints, isCorrect } = mystate;
+  const totalQsns = questions.length;
+  const totalPoints = questions.reduce(
+    (acc, currQsn) => acc + currQsn.points,
+    0
+  );
+//   console.log(totalPoints);
+console.log(mystate);
+console.log();
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
@@ -49,16 +69,26 @@ const totalQsns = questions.length;
         dispatch({ type: "received", payload: response });
       } catch (error) {
         console.log(error);
-        dispatch({ type: "receivedFailed" }); 
+        dispatch({ type: "receivedFailed" });
       }
     };
 
     fetchQuestions();
-  }, []); 
+  }, []);
   return (
     <div className="container">
-      {status === "ready" && <Home dispatch={dispatch}/>}
-      {status === "start" && <Qustion totalQsns={totalQsns} dispatch={dispatch} questionSelected={questions[index]}/>}
+      {status === "ready" && <Home dispatch={dispatch} />}
+      {status === "start" && (
+        <Qustion
+          totalPoints={totalPoints}
+          totalQsns={totalQsns}
+          index={index}
+          dispatch={dispatch}
+          questionSelected={questions[index]}
+          currentPoints={currentPoints}
+          isCorrect={isCorrect}
+        />
+      )}
       {/* Render other components based on the state */}
     </div>
   );
